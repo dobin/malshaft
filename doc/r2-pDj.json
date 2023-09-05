@@ -1,0 +1,56 @@
+{
+    "offset": 4203888,
+    "esil": "rcx,8,rsp,-,=[8],8,rsp,-=",
+    "refptr": false,
+    "fcn_addr": 4203888,
+    "fcn_last": 4203937,
+    "size": 1,
+    "opcode": "push rcx",
+    "disasm": "push rcx",
+    "bytes": "51",
+    "family": "cpu",
+    "type": "rpush",
+    "reloc": false,
+    "type_num": 268435468,
+    "type2_num": 0,
+    "flags": [
+        "fcn.00402570"
+    ],
+    "xrefs": [
+        {
+            "addr": 4201161,
+            "type": "CALL",
+            "perm": "--x"
+        },
+        {
+            "addr": 4205423,
+            "type": "CALL",
+            "perm": "--x"
+        },
+        {
+            "addr": 4205914,
+            "type": "CALL",
+            "perm": "--x"
+        },
+        {
+            "addr": 4206248,
+            "type": "CALL",
+            "perm": "--x"
+        },
+        {
+            "addr": 4206453,
+            "type": "CALL",
+            "perm": "--x"
+        },
+        {
+            "addr": 4206726,
+            "type": "CALL",
+            "perm": "--x"
+        },
+        {
+            "addr": 4207639,
+            "type": "CALL",
+            "perm": "--x"
+        }
+    ]
+}

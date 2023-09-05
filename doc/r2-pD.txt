@@ -1,0 +1,23 @@
+            ; XREFS: CALL 0x00401ac9  CALL 0x00402b6f  CALL 0x00402d5a  
+            ; XREFS: CALL 0x00402ea8  CALL 0x00402f75  CALL 0x00403086  
+            ; XREFS: CALL 0x00403417  
+┌ 50: fcn.00402570 (int64_t arg1);
+│           ; arg int64_t arg1 @ rcx
+│           ; var int64_t var_18h @ rsp+0x18
+│           0x00402570      51             pushq %rcx                  ; arg1
+│           0x00402571      50             pushq %rax
+│           0x00402572      483d00100000   cmpq $0x1000, %rax
+│           0x00402578      488d4c2418     leaq var_18h, %rcx
+│       ┌─< 0x0040257d      7219           jb 0x402598
+│       │   ; CODE XREF from fcn.00402570 @ 0x402596(x)
+│      ┌──> 0x0040257f      4881e9001000.  subq $0x1000, %rcx
+│      ╎│   0x00402586      48830900       orq $0, (%rcx)
+│      ╎│   0x0040258a      482d00100000   subq $0x1000, %rax
+│      ╎│   0x00402590      483d00100000   cmpq $0x1000, %rax
+│      └──< 0x00402596      77e7           ja 0x40257f
+│       │   ; CODE XREF from fcn.00402570 @ 0x40257d(x)
+│       └─> 0x00402598      4829c1         subq %rax, %rcx
+│           0x0040259b      48830900       orq $0, (%rcx)
+│           0x0040259f      58             popq %rax
+│           0x004025a0      59             popq %rcx
+└           0x004025a1      c3             retq

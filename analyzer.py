@@ -52,7 +52,6 @@ def analyzer(filepath):
         #  'perm': '-r-x', 'paddr': 1536, 'vaddr': 4198400}
         if section["name"] != ".text":
             continue
-
         textAddr = section["vaddr"]
         textOffset = section["paddr"]
 
@@ -60,6 +59,8 @@ def analyzer(filepath):
     print("")
 
     with open(filepath, "rb") as f:
+        # list all functions
+        # see doc/r2-aflj.json for example json entry
         functionsStr = r2.cmd("aflj")
         functions = json.loads(functionsStr)
 
@@ -67,19 +68,19 @@ def analyzer(filepath):
         for function in functions:
             if function["type"] != "fcn":
                 continue
-
             offset = function["offset"] - textAddr + textOffset
 
-            # disassembly for UI
+            # disassembly (for UI)
             # has a lot of information (virtaddr, bytes), arrows etc.
+            # see doc/r2-pD.txt
             disasStr = r2.cmd("pD {} @{}".format(
                 function["size"],
                 function["offset"]
             ))
 
-
             # disassembly for fuzzy hash
             # just the plain opcodes as readable text
+            # see doc/r2-pDj.json
             if True:
                 r2.cmd("e scr.color=0")
                 r2.cmd("e asm.syntax=att")
@@ -98,6 +99,7 @@ def analyzer(filepath):
             data = f.read(function["size"])
 
             # LLVM IL (bitcode)
+            # see doc/llvm.txt for an example
             bitcode = ""
             if True:
                 hexbytes = data.hex()

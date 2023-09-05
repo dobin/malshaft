@@ -1,0 +1,40 @@
+{
+    "offset": 4199648,
+    "name": "dbg.mainCRTStartup",
+    "size": 29,
+    "is-pure": "false",
+    "realsz": 29,
+    "noreturn": false,
+    "stackframe": 80,
+    "calltype": "ms",
+    "cost": 12,
+    "cc": 1,
+    "bits": 64,
+    "type": "fcn",
+    "nbbs": 1,
+    "is-lineal": true,
+    "ninstrs": 8,
+    "edges": 0,
+    "ebbs": 1,
+    "signature": "dbg.mainCRTStartup ();",
+    "minbound": 4199648,
+    "maxbound": 4199677,
+    "callrefs": [
+        {
+            "addr": 4233232,
+            "type": "DATA",
+            "at": 4199652
+        }
+    ],
+    "datarefs": [
+        4233232
+    ],
+    "indegree": 0,
+    "outdegree": 1,
+    "nlocals": 0,
+    "nargs": 0,
+    "bpvars": [],
+    "spvars": [],
+    "regvars": [],
+    "difftype": "new"
+}
