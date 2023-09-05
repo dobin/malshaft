@@ -124,4 +124,3 @@ with open(filepath, "rb") as f:
         print("Fuzzy hash: {}".format(ssdeep.hash(data)))
 
         print("")
-        break
