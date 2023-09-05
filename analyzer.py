@@ -18,7 +18,7 @@ class Method():
         
 
     def fuzzyHash(self):
-        pass
+        return ssdeep.hash(self.data)
 
 
 def convertRemill(s):
@@ -55,8 +55,8 @@ def analyzer(filepath):
         textAddr = section["vaddr"]
         textOffset = section["paddr"]
 
-    print(".text section: RVA: 0x{:x} FileOffset: 0x{:x}".format(textAddr, textOffset))
-    print("")
+    #print(".text section: RVA: 0x{:x} FileOffset: 0x{:x}".format(textAddr, textOffset))
+    #print("")
 
     with open(filepath, "rb") as f:
         # list all functions
@@ -68,6 +68,7 @@ def analyzer(filepath):
         for function in functions:
             if function["type"] != "fcn":
                 continue
+            #print("Analyzing: {}".format(function["name"]))
             offset = function["offset"] - textAddr + textOffset
 
             # disassembly (for UI)
@@ -89,7 +90,6 @@ def analyzer(filepath):
                     function["offset"]
                 ))
                 asm = json.loads(asmStr)
-                print("Disassembly FuzzyHash as AT&T:")
                 disasForHash = ""
                 for ins in asm:
                     disasForHash += ins["opcode"] + "\n"
