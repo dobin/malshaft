@@ -25,10 +25,11 @@ def main():
 
 def printCsv(filename, methods):
     for method in methods:
-        print("{};{};{}".format(
+        print("{};{};{};0x{:x}".format(
             filename,
             method.name,
-            method.fuzzyHash()
+            method.fuzzyHash(),
+            method.rva,
         ))
 
 
@@ -59,6 +60,11 @@ def printDetails(methods):
 
         print("Bitcode:")
         print(convertRemill(method.llvmBitcode))
+        print("")
+
+        print("Callrefs:")
+        for callref in method.callrefs:
+            print("  {:x} {}".format(callref['addr'], callref['name']))
         print("")
 
         # fuzzy hash

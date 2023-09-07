@@ -15,6 +15,7 @@ class Method():
         self.disasmRaw = None
         self.data = None
         self.llvmBitcode = None
+        self.callrefs = None
         
 
     def fuzzyHash(self):
@@ -61,7 +62,7 @@ def analyzer(filepath):
     with open(filepath, "rb") as f:
         # list all functions
         # see doc/r2-aflj.json for example json entry
-        functionsStr = r2.cmd("aflj")
+        functionsStr = r2.cmd("afllj")
         functions = json.loads(functionsStr)
 
         methods = []
@@ -101,14 +102,37 @@ def analyzer(filepath):
             # LLVM IL (bitcode)
             # see doc/llvm.txt for an example
             bitcode = ""
-            if True:
+            if False:
                 hexbytes = data.hex()
                 cmd = "docker run --rm -it remill --arch amd64 --ir_out /dev/stdout --bytes {}".format(
                     hexbytes
                 )
                 output_stream = os.popen(cmd)
                 bitcode = output_stream.read()
-        
+
+            # method call refs
+            #print("{}: 0x{:x}".format(function["name"], function["offset"]))
+            callrefs = []
+            if 'callrefs' in function:
+                for ref in function["callrefs"]:
+                    if ref["type"] != "CALL":
+                        continue
+                    destName = ''
+                    for fu in functions:
+                        if fu["offset"] == ref["addr"]:
+                            destName = fu["name"]
+                            break
+
+                    callrefs.append({
+                        "addr": ref["addr"],
+                        "name": destName
+                    })
+                    #print("  addr: {:x} at: {:x} {}".format(
+                    #    ref["addr"],
+                    #    ref["at"],
+                    #    destName,
+                    #))
+
             method = Method()
             method.offset = offset
             method.rva = function["offset"]
@@ -117,6 +141,7 @@ def analyzer(filepath):
             method.disasmRaw = disasForHash
             method.data = data
             method.llvmBitcode = bitcode
+            method.callrefs = callrefs
 
             methods.append(method)
     
