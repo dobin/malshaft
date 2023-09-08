@@ -2,10 +2,18 @@
 
 Malware Shaft
 
-## Notes
+## How it works
 
-Make sure you have the current version of radare. 
 
+## Install on Ubuntu 22.04
+
+Install current version of radare2 from https://github.com/radareorg/radare2
+
+And:
+```
+apt install ssdeep libfuzzy-dev
+pip3 install -r requirements.txt
+```
 
 # Deps
 

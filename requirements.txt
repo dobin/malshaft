@@ -1,4 +1,3 @@
 r2pipe
-json
 hexdump
 ssdeep
