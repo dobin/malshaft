@@ -2,7 +2,10 @@
 
 Malware Shaft
 
+
 ## How it works
+
+[How It Works](https://github.com/dobin/malshaft/blob/master/doc/howitworks.md)  (currently)
 
 
 ## Install on Ubuntu 22.04
@@ -14,6 +17,7 @@ And:
 apt install ssdeep libfuzzy-dev
 pip3 install -r requirements.txt
 ```
+
 
 # Deps
 

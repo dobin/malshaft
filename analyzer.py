@@ -1,49 +1,21 @@
 import r2pipe
 import json
 import hexdump
-import ssdeep
 import os
 import sys
 
+from typing import List
+from pyvex.stmt import IRStmt
 
-class Method():
-    def __init__(self):
-        self.offset = None
-        self.rva = None
-        self.name = None
-        self.disasmUi = None
-        self.disasmRaw = None
-        self.data = None
-        self.llvmBitcode = None
-        self.callrefs = None
-        
+from pyvexsupport import pyvexAnalyze, BasicBlock, resolveMethodBbNext
+from remillsupport import remillToLlvm
 
-    def fuzzyHash(self):
-        return ssdeep.hash(self.data)
+from model import * 
 
 
-def convertRemill(s):
-    p = False
-    for line in s.split('\n'):
-        #if line.endswith("{"):
-        #    print("AAA")
-        #if line.endswith("}"):
-        #    print("BBB")
-        if '@sub_0' in line:
-            p = True
-        if line == ("}"):
-            p = False
-
-        if p:
-            l = line
-            l = l.replace(', align 8', '')
-            l = l.replace(', align 1', '')
-            print(l)
-
-
-def analyzer(filepath):
+def analyzer(filepath) -> PeFile:
     r2 = r2pipe.open(filepath)
-    r2.cmd("aaa")
+    r2.cmd("aaa")  # analyze
 
     # sections
     sectionsStr = r2.cmd("iSj")
@@ -56,20 +28,22 @@ def analyzer(filepath):
         textAddr = section["vaddr"]
         textOffset = section["paddr"]
 
-    #print(".text section: RVA: 0x{:x} FileOffset: 0x{:x}".format(textAddr, textOffset))
-    #print("")
+    print(".text section: RVA: 0x{:x} FileOffset: 0x{:x}".format(textAddr, textOffset))
+    print("")
 
+    symbols = []
     with open(filepath, "rb") as f:
         # list all functions
         # see doc/r2-aflj.json for example json entry
         functionsStr = r2.cmd("afllj")
         functions = json.loads(functionsStr)
 
-        methods = []
+        methods: List[Method] = []
         for function in functions:
+            # save it as a symbol to reference later (resolver)
             if function["type"] != "fcn":
+                symbols.append(Symbol(function["offset"], function["name"]))
                 continue
-            #print("Analyzing: {}".format(function["name"]))
             offset = function["offset"] - textAddr + textOffset
 
             # disassembly (for UI)
@@ -101,17 +75,12 @@ def analyzer(filepath):
 
             # LLVM IL (bitcode)
             # see doc/llvm.txt for an example
+            # No need anymore
             bitcode = ""
             if False:
-                hexbytes = data.hex()
-                cmd = "docker run --rm -it remill --arch amd64 --ir_out /dev/stdout --bytes {}".format(
-                    hexbytes
-                )
-                output_stream = os.popen(cmd)
-                bitcode = output_stream.read()
+                bitcode = remillToLlvm(data)
 
             # method call refs
-            #print("{}: 0x{:x}".format(function["name"], function["offset"]))
             callrefs = []
             if 'callrefs' in function:
                 for ref in function["callrefs"]:
@@ -127,11 +96,9 @@ def analyzer(filepath):
                         "addr": ref["addr"],
                         "name": destName
                     })
-                    #print("  addr: {:x} at: {:x} {}".format(
-                    #    ref["addr"],
-                    #    ref["at"],
-                    #    destName,
-                    #))
+
+            # PyVEX Stuff
+            vexBB: List[BasicBlock] = pyvexAnalyze(data, function["offset"])
 
             method = Method()
             method.offset = offset
@@ -142,7 +109,14 @@ def analyzer(filepath):
             method.data = data
             method.llvmBitcode = bitcode
             method.callrefs = callrefs
+            method.vexBB = vexBB
+            method.vexStr = ""
 
             methods.append(method)
     
-    return methods
+    peFile = PeFile(
+        methods,
+        symbols,
+        sections
+    )
+    return peFile

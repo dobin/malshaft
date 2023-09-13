@@ -3,6 +3,10 @@
 import argparse
 from analyzer import *
 
+from remillsupport import convertRemill
+from model import PeFile
+from pyvexsupport import augmentVex
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -15,12 +19,13 @@ def main():
         exit(1)
 
     filepath = args.file
-    methods = analyzer(filepath)
+    peFile: PeFile = analyzer(filepath)
+    augmentVex(peFile)
 
     if args.csv:
-        printCsv(os.path.basename(args.file), methods)
+        printCsv(os.path.basename(args.file), peFile.methods)
     else:
-        printDetails(methods)
+        printDetails(peFile.methods)
 
 
 def printCsv(filename, methods):
@@ -66,6 +71,10 @@ def printDetails(methods):
         for callref in method.callrefs:
             print("  {:x} {}".format(callref['addr'], callref['name']))
         print("")
+
+        #print("VEX:")
+        print("VEX Str:")
+        print("{}".format(method.vexStr))
 
         # fuzzy hash
         print("Fuzzy hash: {}".format(method.fuzzyHash()))
